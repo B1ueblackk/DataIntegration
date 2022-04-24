@@ -1,5 +1,9 @@
 package com.example.dataintegration.serviceImpl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.dataintegration.entity.DmVAsDjkInfo;
+import com.example.dataintegration.entity.DmVAsDjkfqInfo;
+import com.example.dataintegration.entity.DmVTrContractMx;
 import com.example.dataintegration.repository.*;
 import com.example.dataintegration.service.myService;
 import lombok.extern.slf4j.Slf4j;
@@ -7,9 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Slf4j
 @Service
 public class serviceImpl implements myService {
+    Map<String,BigDecimal> amt = new HashMap<>();
     @Autowired
     private DmVAsDjkfqInfoRepository dmVAsDjkfqInfoRepository;
     @Autowired
@@ -56,4 +70,103 @@ public class serviceImpl implements myService {
     private PriCustLiabInfoRepository priCustLiabInfoRepository;
     @Autowired
     private PriStarInfoRepository priStarInfoRepository;
+
+    @Override
+    public JSONObject getConsumeAmt(String uid) {
+        JSONObject jsonObject = new JSONObject();
+        List<Map<Object,Object>> djkfqInfoRepositoryAmt = dmVAsDjkfqInfoRepository.findAmt(uid);
+        List<Map<Object, Object>> djkMxRepositoryAmt = dmVTrDjkMxRepository.findAmt(uid);
+        List<Map<Object, Object>> contractMxRepositoryAmt = dmVTrContractMxRepository.findAmt(uid);
+        List<Map<Object, Object>> dsfMxRepositoryAmt = dmVTrDsfMxRepository.findAmt(uid);
+        List<Map<Object, Object>> duebillMxRepositoryAmt = dmVTrDuebillMxRepository.findAmt(uid);
+        List<Map<Object, Object>> etcMxRepositoryAmt = dmVTrEtcMxRepository.findAmt(uid);
+        List<Map<Object, Object>> grwyMxRepositoryAmt = dmVTrGrwyMxRepository.findAmt(uid);
+        List<Map<Object, Object>> gzdfMxRepositoryAmt = dmVTrGzdfMxRepository.findAmt(uid);
+        List<Map<Object, Object>> huanbMxRepositoryAmt = dmVTrHuanbMxRepository.findAmt(uid);
+        List<Map<Object, Object>> huanxMxRepositoryAmt = dmVTrHuanxMxRepository.findAmt(uid);
+        List<Map<Object, Object>> saMxRepositoryAmt = dmVTrSaMxRepository.findAmt(uid);
+        List<Map<Object, Object>> sbybMxRepositoryAmt = dmVTrSbybMxRepository.findAmt(uid);
+        List<Map<Object, Object>> sdrqMxRepositoryAmt = dmVTrSdrqMxRepository.findAmt(uid);
+        List<Map<Object, Object>> shopMxRepositoryAmt = dmVTrShopMxRepository.findAmt(uid);
+        List<Map<Object, Object>> sjyhMxRepositoryAmt = dmVTrSjyhMxRepository.findAmt(uid);
+
+
+        this.amt = new HashMap<>();
+
+        djkfqInfoRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        djkMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        contractMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        dsfMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        duebillMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        etcMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        grwyMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        gzdfMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        huanbMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        huanxMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        saMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        sbybMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        sdrqMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        shopMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+
+        sjyhMxRepositoryAmt.forEach(stringBigDecimalMap -> {
+            concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
+        });
+        jsonObject.put("amt", this.amt);
+        return jsonObject;
+    }
+
+
+    private void concat(Object o1,Object o2){
+        Map<String, BigDecimal> stringBigDecimalMap = new HashMap<>();
+        stringBigDecimalMap.put((String) o1,(BigDecimal) o2);
+        amt = Stream.concat(amt.entrySet().stream(), stringBigDecimalMap.entrySet().stream())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        BigDecimal::add));
+    }
+
 }
+
+
