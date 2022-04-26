@@ -24,4 +24,10 @@ public class myController {
     public JSONObject getConsumeAmt(String uid){
         return _myService.getConsumeAmt(uid);
     }
+
+    @ResponseBody
+    @PostMapping("/getTop20Cst")
+    public JSONObject getTop20Cst(){
+        return _myService.getTop20Cst();
+    }
 }

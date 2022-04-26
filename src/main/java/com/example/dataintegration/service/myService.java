@@ -6,5 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface myService {
-    public JSONObject getConsumeAmt(String uid);
+    JSONObject getConsumeAmt(String uid);
+
+    JSONObject getTop20Cst();
 }

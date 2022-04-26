@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -152,8 +149,30 @@ public class serviceImpl implements myService {
         sjyhMxRepositoryAmt.forEach(stringBigDecimalMap -> {
             concat(stringBigDecimalMap.get("date"),stringBigDecimalMap.get("sum"));
         });
-        jsonObject.put("amt", this.amt);
+        Map<String,String> ans = new HashMap<>();
+        amt.forEach((s, bigDecimal) -> ans.put(s,bigDecimal.toString()));
+        jsonObject.put("amt", ans);
         return jsonObject;
+    }
+
+    @Override
+    public JSONObject getTop20Cst() {
+        List<Map<String, String>> allTop = dmVAsDjkInfoRepository.findTop();
+        Map<String,List<String>> ret = new HashMap<>();
+        allTop.forEach(stringStringMap -> {
+            String uname = dmVAsDjkInfoRepository.getDmVAsDjkInfoByUid(stringStringMap.get("uuid")).getCustName();
+            String date = stringStringMap.get("ddate");
+
+            if(ret.containsKey(date)){
+                if(ret.get(date).size()<20) ret.get(date).add(uname);
+            }
+            else ret.put(date,new ArrayList<>());
+        });
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cst",ret);
+        return jsonObject;
+
     }
 
 

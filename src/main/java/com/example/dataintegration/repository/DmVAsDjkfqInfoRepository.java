@@ -16,4 +16,6 @@ public interface DmVAsDjkfqInfoRepository extends JpaRepository<DmVAsDjkfqInfo,I
 
     @Query("select d.etlDt as date,sum(d.mthInstl) as sum from DmVAsDjkfqInfo d where d.uid=:uid group by d.etlDt")
     List<Map<Object,Object>> findAmt(@Param("uid") String uid);
+
+
 }
