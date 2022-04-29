@@ -27,7 +27,7 @@ public class myController {
 
     @ResponseBody
     @PostMapping("/getTop20Cst")
-    public JSONObject getTop20Cst(){
-        return _myService.getTop20Cst();
+    public JSONObject getTop20Cst(String mode){
+        return _myService.getTop20Cst(mode);
     }
 }

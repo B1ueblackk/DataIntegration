@@ -17,5 +17,7 @@ public interface DmVAsDjkfqInfoRepository extends JpaRepository<DmVAsDjkfqInfo,I
     @Query("select d.etlDt as date,sum(d.mthInstl) as sum from DmVAsDjkfqInfo d where d.uid=:uid group by d.etlDt")
     List<Map<Object,Object>> findAmt(@Param("uid") String uid);
 
+    @Query(nativeQuery = true,value = "select uid as uuid,etl_dt as ddate from dm_v_as_djkfq_info group by uuid,ddate order by sum(mth_instl) desc")
+    List<Map<String,String>> findTop();
 
 }

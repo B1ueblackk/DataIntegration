@@ -8,5 +8,5 @@ import org.springframework.stereotype.Service;
 public interface myService {
     JSONObject getConsumeAmt(String uid);
 
-    JSONObject getTop20Cst();
+    JSONObject getTop20Cst(String mode);
 }

@@ -15,4 +15,7 @@ public interface DmVTrContractMxRepository extends JpaRepository<DmVTrContractMx
 
     @Query("select d.etlDt as date,sum(d.bussAmt) as sum from DmVTrContractMx d where d.uid=:uid group by d.etlDt")
     List<Map<Object, Object>> findAmt(@Param("uid") String uid);
+
+    @Query(nativeQuery = true,value = "select dm_v_tr_contract_mx.uid as uuid,dm_v_tr_contract_mx.etl_dt as ddate from dm_v_tr_contract_mx group by uuid,ddate order by sum(dm_v_tr_contract_mx.buss_amt) desc")
+    List<Map<String,String>> findTop();
 }

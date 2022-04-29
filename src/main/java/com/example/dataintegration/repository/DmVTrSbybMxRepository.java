@@ -15,4 +15,8 @@ public interface DmVTrSbybMxRepository extends JpaRepository<DmVTrSbybMx,Integer
 
     @Query("select d.etlDt as date,sum(d.tranAmtFen) as sum from DmVTrSbybMx d where d.uid=:uid group by d.etlDt")
     List<Map<Object, Object>> findAmt(@Param("uid") String uid);
+
+    @Query(nativeQuery = true,value = "select uid as uuid,etl_dt as ddate from dm_v_tr_sbyb_mx group by uuid,ddate order by sum(tran_amt_fen) desc")
+    List<Map<String,String>> findTop();
+
 }

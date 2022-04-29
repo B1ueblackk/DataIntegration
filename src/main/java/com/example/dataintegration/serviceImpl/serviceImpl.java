@@ -1,19 +1,15 @@
 package com.example.dataintegration.serviceImpl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.dataintegration.entity.DmVAsDjkInfo;
-import com.example.dataintegration.entity.DmVAsDjkfqInfo;
-import com.example.dataintegration.entity.DmVTrContractMx;
 import com.example.dataintegration.repository.*;
 import com.example.dataintegration.service.myService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -156,25 +152,83 @@ public class serviceImpl implements myService {
     }
 
     @Override
-    public JSONObject getTop20Cst() {
-        List<Map<String, String>> allTop = dmVAsDjkInfoRepository.findTop();
-        Map<String,List<String>> ret = new HashMap<>();
-        allTop.forEach(stringStringMap -> {
-            String uname = dmVAsDjkInfoRepository.getDmVAsDjkInfoByUid(stringStringMap.get("uuid")).getCustName();
-            String date = stringStringMap.get("ddate");
-
-            if(ret.containsKey(date)){
-                if(ret.get(date).size()<20) ret.get(date).add(uname);
-            }
-            else ret.put(date,new ArrayList<>());
-        });
-
+    public JSONObject getTop20Cst(String mode) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cst",ret);
+        switch (mode){
+            case "dm_v_as_djkfq_info":
+                jsonObject.put(mode,getTop20(dmVAsDjkfqInfoRepository.findTop()));
+                break;
+            case "dm_v_tr_contract_mx":
+                jsonObject.put(mode,getTop20(dmVTrContractMxRepository.findTop()));
+                break;
+            case "dm_v_tr_djk_mx":
+                jsonObject.put(mode,getTop20(dmVTrDjkMxRepository.findTop()));
+                break;
+            case "dm_v_tr_dsf_mx":
+                jsonObject.put(mode,getTop20(dmVTrDsfMxRepository.findTop()));
+                break;
+            case "dm_v_tr_duebill_mx":
+                jsonObject.put(mode,getTop20(dmVTrDuebillMxRepository.findTop()));
+                break;
+            case "dm_v_tr_etc_mx":
+                jsonObject.put(mode,getTop20(dmVTrEtcMxRepository.findTop()));
+                break;
+            case "dm_v_tr_grwy_mx":
+                jsonObject.put(mode,getTop20(dmVTrGrwyMxRepository.findTop()));
+                break;
+            case "dm_v_tr_gzdf_mx":
+                jsonObject.put(mode,getTop20(dmVTrGzdfMxRepository.findTop()));
+                break;
+            case "dm_v_tr_huanb_mx":
+                jsonObject.put(mode,getTop20(dmVTrHuanbMxRepository.findTop()));
+                break;
+            case "dm_v_tr_huanx_mx":
+                jsonObject.put(mode,getTop20(dmVTrHuanxMxRepository.findTop()));
+                break;
+            case "dm_v_tr_sa_mx":
+                jsonObject.put(mode,getTop20(dmVTrSaMxRepository.findTop()));
+                break;
+            case "dm_v_tr_sbyb_mx":
+                jsonObject.put(mode,getTop20(dmVTrSbybMxRepository.findTop()));
+                break;
+            case "dm_v_tr_sdrq_mx":
+                jsonObject.put(mode,getTop20(dmVTrSdrqMxRepository.findTop()));
+                break;
+            case "dm_v_tr_shop_mx":
+                jsonObject.put(mode,getTop20(dmVTrShopMxRepository.findTop()));
+                break;
+            case "dm_v_tr_sjyh_mx":
+                jsonObject.put(mode,getTop20(dmVTrSjyhMxRepository.findTop()));
+                break;
+            default:
+                break;
+        }
         return jsonObject;
 
     }
 
+    private Map<String,List<String>> getTop20(List<Map<String, String>> data){
+        Map<String,List<String>> ret = new HashMap<>();
+        data.forEach(stringStringMap -> {
+            String uname = stringStringMap.get("uuid");
+            String date = stringStringMap.get("ddate");
+
+            if(ret.containsKey(date)){
+                if(ret.get(date).size()<20){
+                    if(!ret.get(date).contains(uname)){
+                        ret.get(date).add(uname);
+                    }
+                }
+            }
+            else {
+                ArrayList<String> tmp = new ArrayList<>();
+                tmp.add(uname);
+                ret.put(date,tmp);
+            };
+        });
+
+        return ret;
+    }
 
     private void concat(Object o1,Object o2){
         Map<String, BigDecimal> stringBigDecimalMap = new HashMap<>();
